@@ -1,11 +1,51 @@
-import ironhackersImg from "./assets/ironhackers.avif"
+
+import axios from 'axios';
 import './App.css';
+import NavBar from "./components/NavBar";
+import { Route, Routes } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import HomePage from "./components/HomePage";
+import ApartmentsList from "./components/ApartmentsList";
+import ApartmentDetails from "./components/ApartmentDetails";
+import CreateApartment from "./components/CreateApartment";
 
 function App() {
+
+  const [ apartments, setApartments ] = useState([]);
+
+ 
+
+  useEffect(() => {
+    fetchApartments();
+  }, []);
+
+  const fetchApartments = () => {
+    axios.get("https://ironbnb-m3.herokuapp.com/apartments")
+      .then(response => {
+        
+        setApartments(response.data);
+      })
+      .catch(e => console.log("error getting characters from API", e));
+  }
+
+
+
+
+
   return (
     <div className="App">
-      <h1>Welcome</h1>
-      <img src={ironhackersImg} alt="ironhackers" />
+      <NavBar />      
+
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/apartments/create" element={<CreateApartment callBackToList={fetchApartments} />} />
+        <Route path="/apartments" element={<ApartmentsList apartments={apartments} />} />
+        <Route path="/apartments/:id" element={<ApartmentDetails />} />
+        
+
+      </Routes>
+      
+
     </div>
   );
 }
